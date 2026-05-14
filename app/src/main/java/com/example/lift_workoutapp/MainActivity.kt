@@ -70,11 +70,22 @@ fun WorkoutApp() {
     ) { paddingValues ->
 
         when (selectedScreen) {
-            "Home" -> HomeScreen(Modifier.padding(paddingValues))
+            "Home" -> HomeScreen(
+                modifier = Modifier.padding(paddingValues),
+                onSettingsClick = { selectedScreen = "Settings" }
+            )
+
             "Lists" -> ListsScreen(Modifier.padding(paddingValues))
             "Workout" -> WorkoutScreen(Modifier.padding(paddingValues))
             "Activity" -> ActivityScreen(Modifier.padding(paddingValues))
-            "Stats" -> StatsScreen(Modifier.padding(paddingValues))
+            "Stats" -> StatsScreen(
+                modifier = Modifier.padding(paddingValues),
+                onSettingsClick = { selectedScreen = "Settings" }
+            )
+            "Settings" -> SettingsScreen(
+                modifier = Modifier.padding(paddingValues),
+                onBack = { selectedScreen = "Home" }
+            )
         }
     }
 }

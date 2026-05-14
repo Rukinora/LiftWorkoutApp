@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
+
 @Dao
 interface WorkoutDao {
 
@@ -13,4 +14,10 @@ interface WorkoutDao {
 
     @Query("SELECT * FROM workouts ORDER BY dateMillis ASC")
     fun getAllWorkoutsFlow(): Flow<List<WorkoutEntity>>
+
+    @Query("DELETE FROM workouts")
+    suspend fun deleteAllWorkouts()
+
+    @Query("SELECT * FROM workouts ORDER BY dateMillis DESC")
+    fun getAllWorkouts(): Flow<List<WorkoutEntity>>
 }

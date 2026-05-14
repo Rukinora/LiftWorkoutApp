@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import com.example.lift_workoutapp.data.AppSettings
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Pause
@@ -26,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.lift_workoutapp.database.WorkoutDatabase
 import com.example.lift_workoutapp.database.WorkoutEntity
 import kotlinx.coroutines.launch
-
+import com.example.lift_workoutapp.data.WorkoutSession
 
 
 
@@ -40,12 +41,16 @@ fun WorkoutScreen(modifier: Modifier = Modifier) {
     val dao = remember {
         WorkoutDatabase.getDatabase(context).workoutDao()
     }
-    var workoutStarted by remember { mutableStateOf(false) }
-    var isPaused by remember { mutableStateOf(false) }
-    var seconds by remember { mutableIntStateOf(0) }
-    var showExercisePicker by remember { mutableStateOf(false) }
 
-    val exercises = remember { mutableStateListOf<ExerciseEntry>() }
+    var isPaused by remember { mutableStateOf(false) }
+
+    var showExercisePicker by remember { mutableStateOf(false) }
+    var workoutStarted by WorkoutSession.workoutStarted
+
+    var seconds by WorkoutSession.seconds
+
+    val exercises = WorkoutSession.exercises
+
 
     LaunchedEffect(workoutStarted, isPaused) {
         while (workoutStarted && !isPaused) {
@@ -53,14 +58,67 @@ fun WorkoutScreen(modifier: Modifier = Modifier) {
             seconds++
         }
     }
-
+    //    ,"", "","", ""
     val exerciseMap = mapOf(
         "My List" to listOf("Bench Press", "Squat", "Deadlift"),
-        "Arms" to listOf("Bicep Curl", "Hammer Curl", "Tricep Pushdown"),
-        "Legs" to listOf("Squat", "Leg Press", "Calf Raise"),
-        "Back" to listOf("Lat Pulldown", "Barbell Row", "Deadlift"),
-        "Chest" to listOf("Bench Press", "Incline Press", "Chest Fly"),
-        "Core" to listOf("Plank", "Crunches", "Leg Raises")
+        //Missing Forearm execises
+        "Arms" to listOf("Bicep Curl", "Hammer Curl", "Tricep Pushdown", "Triceps Dip",
+            "Barbell Curl", "Alternating Dumbbell Curl","Rope Cable Curl", "EZ Barbell Curl",
+            "EZ Barbell Preacher Curl", "Hammer Curl","Incline Dumbbell Curl",
+            "Dumbbell Concentration Curl","Single-Arm Low Pulley Cable Curl",
+            "Straight Bar Low Pulley Cable Curl","Standing High Pulley Cable Curl",
+            "Seated Barbell Wrist Curl","Seated Barbell Wrist Extension", "Reverse Barbell Curl",
+            "Dumbbell Shoulder Press", "Dumbbell Lateral Raise", "Dumbbell Front Raise",
+            "High Cable Rear Delt Fly", "Smith Machine Shoulder Press", "Barbell Upright Row",
+            "Bent-Over Lateral Raise", "Cable One-Arm Lateral Raise", "Dumbbell Push Press",
+            "Barbell Push Press", "Single-Arm Cable Front Raise", "Barbell Front Raise",
+            "Seated Barbell Shoulder Press", "Seated Behind the Neck Barbell Shoulder Press",
+            "Standing Barbell Shoulder Press", "Standing Behind the Neck Barbell Shoulder Press",
+            "Alternate Dumbbell Front Raise Neutral Grip",
+            "One-Arm Low-Pulley Front Raise Neutral Grip", "Two-Handed Dumbbell Front Raise",
+            "Lying Triceps Extension", "Triceps Pressdown", "Cable Rope Pushdown",
+            "Dumbbell Overhead Triceps Extension", "Close Grip Bench Press", "Kickback",
+            "Reverse Grip Cable Triceps Extension with Barbell",
+            "Single-Arm Cable Triceps Extension",
+            "Single-Arm Cable Triceps Extension with Supinated Grip",
+            "Lying Dumbbell Triceps Extension", "Seated Barbell French Press",
+            "Bench Dips", "Parallel Dip Bar", "Dumbbell Shoulder Press", "Dumbbell Lateral Raise",
+            "Dumbbell Front Raise", "High Cable Rear Delt Fly", "Smith Machine Shoulder Press",
+            "Barbell Upright Row", "Bent-Over Lateral Raise", "Cable One-Arm Lateral Raise",
+            "Dumbbell Push Press", "Barbell Push Press", "Single-Arm Cable Front Raise",
+            "Barbell Front Raise", "Seated Barbell Shoulder Press",
+            "Seated Behind the Neck Barbell Shoulder Press", "Standing Barbell Shoulder Press",
+            "Standing Behind the Neck Barbell Shoulder Press",
+            "Alternate Dumbbell Front Raise Neutral Grip",
+            "One-Arm Low-Pulley Front Raise Neutral Grip", "Two-Handed Dumbbell Front Raise"),
+        "Legs" to listOf("Squat", "Leg Press", "Calf Raise","Leg Extension", "Lunge",
+            "Lying Leg Curl", "Hack Squat" ,"Seated Leg Curl", "Single Leg Extension","Front Squat",
+            "Dumbbell Stiff-Leg Deadlift" ,"Barbell Stiff-Leg Deadlift", "Dumbbell Goblet Squat",
+            "Knee Tuck Jumps", "Burpees" ,"Bodyweight Squat", "Medicine Ball Squat",
+            "Barbell Bulgarian Split Squat", "Bodyweight Bulgarian Split Squat" ,
+            "Mini-Band Air Squat", "Jump Squat","Wall Sit", "Medicine Ball Deadlift" ,
+            "Single Leg Bodyweight Deadlift", "Kettlebell Sumo Deadlift","Bodyweight Glute Bridge",
+            "Single Leg Glute Bridge" ,"Banded Glute Bridge", "Smith Machine Hip Thrust",
+            "Barbell Hip Thrust", "Band Seated Hip Abduction" ,"Seated Hip Abduction Machine",
+            "Standing Cable Abduction","Side Lying Leg Raise", "Glute Ham Raise" ,
+            "Dumbbell Step Up", "Lateral Mini-Band Walk","Standing Knee Raise", "Kettlebell Swings",
+            "Standing Cable Kickback", "Side Lying Hip Raise","quat Sit to Reach"),
+        "Back" to listOf("Lat Pulldown", "Barbell Row", "Deadlift",
+            "Dumbbell Bent-Over Row (Single Arm)", "Wide-Grip Pulldown","Seated Cable Row",
+            "Close-Grip Pulldown" ,"Barbell Row", "Behind-Neck Pulldown","Reverse-Grip Pulldown",
+            "Rope Pulldown" ,"T-Bar Rows", "Barbell Bent Over Rows Supinated Grip","Pull Up",
+            "Behind the Neck Pull Up" ,"Pull Up with a Supinated Grip", "Straight Arm Lat Pulldown",
+            "Dumbbell Bent Over Rows", "Dumbbell Pullover" ,"Barbell Pullover", "Barbell Deadlift",
+            "Barbell Sumo Deadlift", "Trap Bar Deadlift" ,"Dumbbell Deadlift", "Barbell Shrug",
+            "Dumbbell Shrugs"),
+        "Chest" to listOf("Bench Press", "Incline Press", "Chest Fly","Barbell Bench Press",
+            "Incline Dumbbell Bench Press","Pec Deck", "Cable Crossover",
+            "Incline Barbell Bench Press", "Dumbbell Bench Press","Dumbbell Fly",
+            "Incline Dumbbell Fly","Chest Press Machine", "Barbell Declined Bench Press",
+            "Dumbbell Declined Bench Press", "Push Ups"),
+        "Core" to listOf("Plank", "Crunches", "Leg Raises","Crunch", "Oblique Crunch",
+            "Crunch Machine", "Rope Ab Pulldown" ,"Plank", "Hanging Leg Raise",
+            "Bent Knee Reverse Crunch", "Long Arm Crunch" ,"Plank Get Ups")
     )
 
     var selectedTab by remember { mutableStateOf("My List") }
@@ -145,10 +203,11 @@ fun WorkoutScreen(modifier: Modifier = Modifier) {
                                 }
                             }
 
-                            workoutStarted = false
+                            WorkoutSession.workoutStarted.value = false
+                            WorkoutSession.seconds.intValue = 0
+                            WorkoutSession.exercises.clear()
+
                             showExercisePicker = false
-                            seconds = 0
-                            exercises.clear()
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -163,67 +222,111 @@ fun WorkoutScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(20.dp))
 
             if (showExercisePicker) {
-                ScrollableTabRow(
-                    selectedTabIndex = tabs.indexOf(selectedTab),
-                    containerColor = Color(0xFF121212), // dark background
-                    contentColor = Color(0xFFFFFFFF),    // selected tab color
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(
-                                tabPositions[tabs.indexOf(selectedTab)]
-                            ),
-                            color = Color(0xFFFFC94D) // 👈 THIS REMOVES PINK
-                        )
-                    }
-                )
+                var searchText by remember { mutableStateOf("") }
 
+                val filteredExercises = exerciseMap[selectedTab]
+                    ?.filter { it.contains(searchText, ignoreCase = true) }
+                    ?: emptyList()
 
-                {
-                    tabs.forEach { tab ->
-                        Tab(
-                            selected = selectedTab == tab,
-                            onClick = { selectedTab = tab },
-                            text = { Text(tab) },
-
-                        )
-
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                LazyColumn {
-                    items(exerciseMap[selectedTab] ?: emptyList()) { exerciseName ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 6.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF1f1f1f) // dark gray
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    ScrollableTabRow(
+                        selectedTabIndex = tabs.indexOf(selectedTab),
+                        containerColor = Color(0xFF121212),
+                        contentColor = Color(0xFFFFC94D),
+                        indicator = { tabPositions ->
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(
+                                    tabPositions[tabs.indexOf(selectedTab)]
+                                ),
+                                color = Color(0xFFFFC94D)
                             )
+                        }
+                    ) {
+                        tabs.forEach { tab ->
+                            Tab(
+                                selected = selectedTab == tab,
+                                onClick = {
+                                    selectedTab = tab
+                                    searchText = ""
+                                },
+                                text = {
+                                    Text(
+                                        tab,
+                                        color = if (selectedTab == tab)
+                                            Color(0xFFFFC94D)
+                                        else
+                                            Color.Gray
+                                    )
+                                }
+                            )
+                        }
+                    }
 
-                        ) {
-                            Row(
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        placeholder = { Text("Search exercises...") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color(0xFFFFC94D),
+                            focusedContainerColor = Color(0xFF1E1E1E),
+                            unfocusedContainerColor = Color(0xFF1E1E1E),
+                            focusedIndicatorColor = Color(0xFFFFC94D),
+                            unfocusedIndicatorColor = Color.Gray
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(filteredExercises) { exerciseName ->
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(vertical = 6.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFF1F1F1F)
+                                )
                             ) {
-                                Text(exerciseName)
-
-                                Button(
-                                    onClick = {
-                                        exercises.add(ExerciseEntry(exerciseName))
-                                        showExercisePicker = false
-                                    },
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFF6AB00), // dark orange
-                                        contentColor = Color.Black
-                                    )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Add")
+                                    Text(
+                                        text = exerciseName,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(end = 12.dp),
+                                        softWrap = true,
+                                        maxLines = 2,
+                                        color = Color.White
+                                    )
+
+                                    Button(
+                                        onClick = {
+                                            exercises.add(ExerciseEntry(exerciseName))
+                                            showExercisePicker = false
+                                        },
+                                        modifier = Modifier.width(80.dp),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFFF6AB00),
+                                            contentColor = Color.Black
+                                        )
+                                    ) {
+                                        Text("Add")
+                                    }
                                 }
                             }
                         }
@@ -378,6 +481,14 @@ fun SetInputRow(
                 focusedIndicatorColor = Color(0xFFFFC94D),
                 unfocusedIndicatorColor = Color.Gray
             )
+        )
+
+        Spacer(modifier = Modifier.width(6.dp))
+
+        Text(
+            text = AppSettings.weightUnit,
+            color = Color.White,
+            modifier = Modifier.width(32.dp)
         )
 
         IconButton(

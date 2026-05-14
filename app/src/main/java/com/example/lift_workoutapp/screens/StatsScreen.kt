@@ -23,10 +23,13 @@ import androidx.compose.foundation.verticalScroll
 import kotlin.math.ceil
 
 @Composable
-fun StatsScreen(modifier: Modifier = Modifier) {
+fun StatsScreen(
+    modifier: Modifier = Modifier,
+    onSettingsClick: () -> Unit
+){
     //Set Value to True = real app data
     //Value = False, uses fake data
-    var useRealData by remember { mutableStateOf(false) }
+    var useRealData by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val dao = remember {
         WorkoutDatabase.getDatabase(context).workoutDao()
@@ -39,7 +42,13 @@ fun StatsScreen(modifier: Modifier = Modifier) {
     var selectedTab by remember { mutableStateOf("Muscle Group") }
     var selectedMuscle by remember { mutableStateOf("Arms") }
 
-    val filteredWorkouts = filterWorkouts(allWorkouts, selectedFilter)
+    val baseWorkouts = if (useRealData) {
+        allWorkouts
+    } else {
+        addTestWorkoutData(emptyList())
+    }
+
+    val filteredWorkouts = filterWorkouts(baseWorkouts, selectedFilter)
 
     val muscleGroups = listOf("Arms", "Legs", "Back", "Chest", "Core")
 
